@@ -5,9 +5,18 @@ A text-based Adventure Game about a small Squire (You) on an adventure to knight
 allowed_races = ["human", "elf", "half-elf", "dwarf", "teifling", "halfling", "dragonborn", "half-orc"]
 
 class MainCharacter:
-    def __init__(self, name, race):
+    def __init__(self, name, race, starting_location):
         self.name = name
         self.race = race.lower()
+        self.current_location = starting_location
+        # Creating placeholder stats
+        self.strength = 0
+        self.dexterity = 0
+        self.intelligence = 0
+        self.endurance = 0
+        self.charismma = 0
+        self.luck = 0
+        self.mp = 0 
 
     def getStats(self):
         while self.race not in allowed_races:   #  <- Validation Loop
@@ -34,26 +43,45 @@ class MainCharacter:
         self.luck = stats["luck"]
         self.mp = stats["mp"]
 
+    def move(self, direction):
+        if direction in self.current_location.exits:
+            self.current_location = self.current_location.exits[direction]
+            print(f"You travel {direction} to {self.current_location.name}")
+        else:
+            print("You can't go {direction} from here!")
+
 class Locations:
     def __init__(self, name, description):
         self.name = name
         self.description = description
         self.exits = {}
 
+    def __str__(self):
+        return self.name
+    
+    def set_exit(self, direction, neighbor):
+        self.exits[direction] = neighbor
+
 
 
 name = input("Please enter your name: ")
 race = input("What is your race? (Human, Elf, Half-Elf, Dwarf, Teifling, Halfling, Dragonborn, Half-Orc): ").lower()
-player = MainCharacter(name, race)
-player.getStats()
-print(f"I am {player.name} the {player.race}, and have {player.mp} mp.")
 
 # Create Locations
 
 grantville = Locations("Grantville", "A small and peaceful town with a calm atmosphere, also your hometown.")
 forest = Locations("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
         
-grantville.exits["north"]
-forest.exits["east"]
+grantville.set_exit("north", forest)
+forest.set_exit("south", grantville)
 
-print(f"Location: {grantville}")
+
+player = MainCharacter(name, race, grantville)
+player.getStats()
+
+# Story
+print(f"I am {player.name} the {player.race}, and have {player.mp} mp.")
+
+print(f"Location: {player.current_location}")
+player.move("north")
+print(f"Location: {player.current_location}")
