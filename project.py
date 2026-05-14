@@ -83,5 +83,9 @@ player.getStats()
 print(f"I am {player.name} the {player.race}, and have {player.mp} mp.")
 
 print(f"Location: {player.current_location}")
-player.move("north")
+ui = input("What direction would you like to head in? (North or South) ").lower()
+if ui == "south":
+    player.move("south")
+elif ui == "north":
+    player.move("north")
 print(f"Location: {player.current_location}")
