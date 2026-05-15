@@ -50,7 +50,7 @@ class MainCharacter:
         else:
             print("You can't go {direction} from here!")
 
-class Locations:
+class Location:
     def __init__(self, name, description):
         self.name = name
         self.description = description
@@ -69,11 +69,17 @@ race = input("What is your race? (Human, Elf, Half-Elf, Dwarf, Teifling, Halflin
 
 # Create Locations
 
-grantville = Locations("Grantville", "A small and peaceful town with a calm atmosphere, also your hometown.")
-forest = Locations("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
+grantville = Location("Grantville", "A small and peaceful town with a calm atmosphere, also your hometown.")
+forest_M = Location("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
+cave = Location("Random Cave", "You head venture east for whatever reason, and you stumble across a cave.")
+
+# Final Location
+dark_mages_castle = Location("Dark Mages Castle", "You enter the grimm castle where your objective lies, the Dark Mage, the most powerful being in the kingdom, will you defeat him and bring peace to the region?")
         
-grantville.set_exit("north", forest)
-forest.set_exit("south", grantville)
+grantville.set_exit("north", forest_M) # Section 1
+grantville.set_exit("east", cave) # Section 1
+forest_M.set_exit("south", grantville) # Section 1
+cave.set_exit("west", grantville) # Section 1
 
 
 player = MainCharacter(name, race, grantville)
@@ -81,11 +87,16 @@ player.getStats()
 
 # Story
 print(f"I am {player.name} the {player.race}, and have {player.mp} mp.")
+print(f"Location: {player.current_location}")
 
-print(f"Location: {player.current_location}")
-ui = input("What direction would you like to head in? (North or South) ").lower()
-if ui == "south":
-    player.move("south")
-elif ui == "north":
-    player.move("north")
-print(f"Location: {player.current_location}")
+while player.current_location != dark_mages_castle:
+    ui = input("What direction would you like to head in? (North, South, East, or West) ").lower()
+    if ui == "north":
+        player.move("north")
+    elif ui == "south":
+        player.move("south")
+    elif ui == "east":
+        player.move("east")
+    elif ui == "west":
+        player.move("west")
+    print(f"Location: {player.current_location}")
