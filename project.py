@@ -47,8 +47,9 @@ class MainCharacter:
         if direction in self.current_location.exits:
             self.current_location = self.current_location.exits[direction]
             print(f"You travel {direction} to {self.current_location.name}")
+            print(f"{self.current_location.description}")
         else:
-            print("You can't go {direction} from here!")
+            print(f"You can't go {direction} from here!")
 
 class Location:
     def __init__(self, name, description):
@@ -70,15 +71,24 @@ race = input("What is your race? (Human, Elf, Half-Elf, Dwarf, Teifling, Halflin
 # Create Locations
 
 grantville = Location("Grantville", "A small and peaceful town with a calm atmosphere, also your hometown.")
-forest_M = Location("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
+forest_M1 = Location("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
+forest_M2 = Location("Forest of Mist", "You find yourself still in the forest unsure of where to continue.")
+forest_M3 = Location("Forest of Mist", "You are still in the Forest of Mist.")
 cave = Location("Random Cave", "You head venture east for whatever reason, and you stumble across a cave.")
 
 # Final Location
-dark_mages_castle = Location("Dark Mages Castle", "You enter the grimm castle where your objective lies, the Dark Mage, the most powerful being in the kingdom, will you defeat him and bring peace to the region?")
-        
-grantville.set_exit("north", forest_M) # Section 1
+dark_mages_tower = Location("Dark Mage's Tower", "You enter the grimm tower, the walls made of obsidian going up to the clouds themselves, shelves filled up with books of dark magic and alchemy, and the smell of blood from the previous adventurers who dared to challenge the Evil Mage fills the air. ")
+
+# Setting Exits (Moving between locations)
+
+# Grantville
+grantville.set_exit("north", forest_M1) # Section 1
 grantville.set_exit("east", cave) # Section 1
-forest_M.set_exit("south", grantville) # Section 1
+# Forest of Mist
+forest_M1.set_exit("south", grantville) # Section 1
+forest_M1.set_exit("north", forest_M2)
+forest_M2.set_exit("south", forest_M1)
+# Mysterious cave
 cave.set_exit("west", grantville) # Section 1
 
 
@@ -89,14 +99,20 @@ player.getStats()
 print(f"I am {player.name} the {player.race}, and have {player.mp} mp.")
 print(f"Location: {player.current_location}")
 
-while player.current_location != dark_mages_castle:
-    ui = input("What direction would you like to head in? (North, South, East, or West) ").lower()
-    if ui == "north":
+while player.current_location != dark_mages_tower:
+    direction = input("What direction would you like to head in? (North, South, East, or West), or type 'location' to look around.\n ").lower()
+    if direction == "location":
+        print(f"\n[{player.current_location.name}]")
+        print(f"{player.current_location.description}\n")
+        continue
+
+    elif direction == "north":
         player.move("north")
-    elif ui == "south":
+    elif direction == "south":
         player.move("south")
-    elif ui == "east":
+    elif direction == "east":
         player.move("east")
-    elif ui == "west":
+    elif direction == "west":
         player.move("west")
+
     print(f"Location: {player.current_location}")
