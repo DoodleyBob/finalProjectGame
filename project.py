@@ -9,6 +9,7 @@ class MainCharacter:
         self.name = name
         self.race = race.lower()
         self.current_location = starting_location
+        self.inventory = []
         # Creating placeholder stats
         self.strength = 0
         self.dexterity = 0
@@ -17,6 +18,7 @@ class MainCharacter:
         self.charismma = 0
         self.luck = 0
         self.mp = 0 
+    
 
     def getStats(self):
         while self.race not in allowed_races:   #  <- Validation Loop
@@ -43,6 +45,25 @@ class MainCharacter:
         self.luck = stats["luck"]
         self.mp = stats["mp"]
 
+    def gather_item(self):
+        current_loc = self.current_location
+        if current_loc.items:
+            print(f"\nYou found these items:")
+            for idx, item in enumerate(current_loc.items):
+                print(f"{idx + 1}. {item}")
+
+            choice = input("What items do you want to pick up? (Type the item name or type 'cancel'): ").strip()
+            if choice in current_loc.items:
+                self.inventory.append(choice)
+                current_loc.items.remove(choice)
+                print(f"You picked up the {choice}.")
+            elif choice.lower() == "cancel":
+                print("You leave the items.")
+            else:
+                print("That item isn't here.")
+        else:
+            print("\nThere is nothing here")
+
     def move(self, direction):
         if direction in self.current_location.exits:
             self.current_location = self.current_location.exits[direction]
@@ -56,6 +77,8 @@ class Location:
         self.name = name
         self.description = description
         self.exits = {}
+        self.items = []
+        self.npcs = {}
 
     def __str__(self):
         return self.name
@@ -73,7 +96,8 @@ race = input("What is your race? (Human, Elf, Half-Elf, Dwarf, Teifling, Halflin
 grantville = Location("Grantville", "A small and peaceful town with a calm atmosphere, also your hometown.")
 forest_M1 = Location("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
 forest_M2 = Location("Forest of Mist", "You find yourself still in the forest unsure of where to continue.")
-forest_M3 = Location("Forest of Mist", "You are still in the Forest of Mist.")
+forest_M3E = Location("Forest of Mist", "You are still in the Forest of Mist, but in the mist you see a glimmer of light up north.")
+forest_M3W = Location("Forest of Mist", "You are still in the forest of mist...")
 cave = Location("Random Cave", "You head venture east for whatever reason, and you stumble across a cave.")
 
 # Final Location
@@ -88,6 +112,11 @@ grantville.set_exit("east", cave) # Section 1
 forest_M1.set_exit("south", grantville) # Section 1
 forest_M1.set_exit("north", forest_M2)
 forest_M2.set_exit("south", forest_M1)
+forest_M2.set_exit("east", forest_M3E)
+forest_M2.set_exit("west", forest_M3W)
+forest_M3W.set_exit("east", forest_M2)
+forest_M3E.set_exit("west", forest_M2)
+
 # Mysterious cave
 cave.set_exit("west", grantville) # Section 1
 
