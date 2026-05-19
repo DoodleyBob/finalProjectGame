@@ -64,6 +64,22 @@ class MainCharacter:
         else:
             print("\nThere is nothing here")
 
+    def talk_to_npc(self):
+        current_loc = self.current_location
+        if current_loc.npcs:
+            print("There are these people here:")
+            for npc in current_loc.npcs:
+                print(f"- {npc}")
+
+            choice = input("Who do you want to talk to? ").strip()
+            if choice in current_loc.npcs:
+                print(f"\n[{choice}]: '{current_loc.npcs[choice]}'")
+            else:
+                print("They are not here currently.")
+        else:
+            print("\nThere seems to be no one to talk to.")
+
+
     def move(self, direction):
         if direction in self.current_location.exits:
             self.current_location = self.current_location.exits[direction]
@@ -91,10 +107,16 @@ class Location:
 name = input("Please enter your name: ")
 race = input("What is your race? (Human, Elf, Half-Elf, Dwarf, Teifling, Halfling, Dragonborn, Half-Orc): ").lower()
 
-# Create Locations
+# Setting up Locations, NPCs, and items
 
 grantville = Location("Grantville", "A small and peaceful town with a calm atmosphere, also your hometown.")
+grantville.items.append("healing potion")
+grantville.npcs["Old Man Jenkins"] = "AAAAAAAHHHHHHHH!!!!"
+
+
 forest_M1 = Location("Forest of Mist", "A dark forest filled with dead trees and no nearby life, the atmosphere is thick with fog, making it difficult to tell what direction you are heading in.")
+forest_M1.items.append("wooden stick")
+
 forest_M2 = Location("Forest of Mist", "You find yourself still in the forest unsure of where to continue.")
 forest_M3E = Location("Forest of Mist", "You are still in the Forest of Mist, but in the mist you see a glimmer of light up north.")
 forest_M3W = Location("Forest of Mist", "You are still in the forest of mist...")
@@ -129,19 +151,27 @@ print(f"I am {player.name} the {player.race}, and have {player.mp} mp.")
 print(f"Location: {player.current_location}")
 
 while player.current_location != dark_mages_tower:
-    direction = input("What direction would you like to head in? (North, South, East, or West), or type 'location' to look around.\n ").lower()
-    if direction == "location":
-        print(f"\n[{player.current_location.name}]")
-        print(f"{player.current_location.description}\n")
-        continue
+    # Presenting Options
+    print(f"\n-- Location: {player.current_location.name} --")
+    action = input("What would you like to do? (move, look, gather, talk, inventory): ").lower().strip()
 
-    elif direction == "north":
-        player.move("north")
-    elif direction == "south":
-        player.move("south")
-    elif direction == "east":
-        player.move("east")
-    elif direction == "west":
-        player.move("west")
+    if action == "move":
+        direction = input("What direction would you like to head in? (North, South, East, or West), or type 'location' to look around.\n ").lower()
+        player.move(direction)
+    elif action == "look":
+        print(f"\n{player.current_location.description}")
+        if player.current_location.items:
+            print(f"Items on ground: {', '.join(player.current_location.items)}")
+        if player.current_location.npcs:
+            print(f"People here: {', '.join(player.current_location.npcs.keys())}")
+    elif action == "gather":
+        player.gather_item()
+    elif action == "talk":
+        player.talk_to_npc()
+    elif action == "inventory":
+        print(f"\nYour Inventory: {player.inventory if player.inventory else 'Empty'}")
+
+    else:
+        print("Invalid command.")
 
     print(f"Location: {player.current_location}")
